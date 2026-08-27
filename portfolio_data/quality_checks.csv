@@ -1,0 +1,12 @@
+source,check,severity,status,detail
+supermarkets,headline_scale_reconciles,HIGH,PASS,Current-price headline millions reconcile to detailed thousands.
+supermarkets,payment_components_reconcile,HIGH,PASS,Payment components reconcile to their total.
+supermarkets,food_components_reconcile,HIGH,PASS,Food components reconcile to their subtotal.
+supermarkets,nominal_totals_agree,HIGH,PASS,"Channel, payment and category totals agree."
+supermarkets,observed_channel_components_reconcile,HIGH,PASS,Observed channel components reconcile; unavailable months are excluded.
+wholesale,headline_scale_reconciles,HIGH,PASS,Current-price headline millions reconcile to detailed thousands.
+wholesale,payment_components_reconcile,HIGH,PASS,Payment components reconcile to their total.
+wholesale,food_components_reconcile,HIGH,PASS,Food components reconcile to their subtotal.
+wholesale,nominal_totals_agree,HIGH,PASS,"Channel, payment and category totals agree."
+wholesale,observed_channel_components_reconcile,HIGH,PASS,Observed channel components reconcile; unavailable months are excluded.
+wholesale,wholesale_channel_gap_preserved,HIGH,PASS,Wholesale channel detail remains unavailable from September 2022.

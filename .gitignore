@@ -1,0 +1,40 @@
+# Python and local environments
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.coverage
+coverage.xml
+htmlcov/
+*.egg-info/
+dist/
+build/
+
+# Source snapshots and temporary files
+/data/
+*.part
+*.tmp
+
+# Generated deliverables
+/outputs/*
+!/outputs/README.md
+/portfolio_data/*
+!/portfolio_data/README.md
+!/portfolio_data/monthly_summary.csv
+!/portfolio_data/payment_mix.csv
+!/portfolio_data/category_mix.csv
+!/portfolio_data/channel_mix.csv
+!/portfolio_data/quality_checks.csv
+
+# Power BI local state and binaries
+**/.pbi/
+*.pbix
+*.pbit
+
+# Editors and operating system
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+desktop.ini

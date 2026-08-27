@@ -1,0 +1,50 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "argentina-retail-sales"
+version = "0.1.0"
+description = "Analisis reproducible de ventas reales, canales y medios de pago del retail argentino."
+readme = "README.md"
+license = {file = "LICENSE"}
+authors = [{name = "Alexander Huth"}]
+requires-python = ">=3.11,<3.13"
+dependencies = [
+    "pandas==2.3.3",
+    "requests==2.34.2",
+]
+
+[project.scripts]
+argentina-retail-sales = "argentina_retail_sales.pipeline:main"
+
+[project.optional-dependencies]
+dev = [
+    "pytest==9.1.1",
+    "pytest-cov==7.0.0",
+    "ruff==0.12.12",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-p no:cacheprovider --strict-markers"
+
+[tool.coverage.run]
+branch = true
+source = ["argentina_retail_sales"]
+
+[tool.coverage.report]
+show_missing = true
+fail_under = 80
+exclude_also = ["if __name__ == .__main__.:"]
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
+ignore = ["E501"]
