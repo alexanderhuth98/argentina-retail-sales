@@ -1,6 +1,7 @@
 # Pulso del retail argentino
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+[![CI](https://github.com/alexanderhuth98/argentina-retail-sales/actions/workflows/ci.yml/badge.svg)](https://github.com/alexanderhuth98/argentina-retail-sales/actions/workflows/ci.yml)
 
 Caso reproducible de Data Analytics sobre ventas mensuales de supermercados y
 autoservicios mayoristas de Argentina. Separa crecimiento nominal de evolucion real y
