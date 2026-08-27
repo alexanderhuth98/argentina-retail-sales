@@ -16,7 +16,7 @@ build/
 *.part
 *.tmp
 
-# Generated deliverables
+# Generated local deliverables; publish these as GitHub Release assets
 /outputs/*
 !/outputs/README.md
 /portfolio_data/*

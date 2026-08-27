@@ -37,7 +37,7 @@ instancia es remota. No incluya contrasenas en el comando o repositorio. Consult
 3. Actualizar y verificar que el gate sea `PASS`.
 4. Reconciliar mayo de 2026 y los conteos contra `portfolio_data/`.
 5. Revisar las cuatro paginas y crear/certificar el layout movil.
-6. Guardar como PBIP; no agregar cache `.pbi/` ni PBIX.
+6. Guardar una copia como PBIX para GitHub Release; no agregar cache `.pbi/` ni PBIX al historial Git.
 
 ## Validacion local
 

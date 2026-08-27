@@ -15,12 +15,14 @@
 - `ArgentinaRetail.pbip`: punto de entrada versionable.
 - `ArgentinaRetail.SemanticModel/model.bim`: 11 tablas, 12 relaciones y medidas DAX.
 - `ArgentinaRetail.Report/`: cuatro paginas y 33 visuales nativos.
+- `ArgentinaRetail.pbix`: copia binaria local para publicar como activo de GitHub Release.
 - `theme.json`: paleta editorial; azul profundo para supermercados y terracota para
   mayoristas, con gris para contexto y alertas reservadas.
 - `validate_pbip.ps1`: JSON, contratos CSV, tipos, relaciones, referencias visuales,
   layout, rutas, credenciales y deserializacion TOM opcional.
 
-No se incluyen PBIX, cache, credenciales ni rutas locales.
+No se versionan PBIX, cache, credenciales ni rutas locales. El PBIX se genera localmente y
+se distribuye como activo de GitHub Release con hash SHA-256.
 
 ## Conexion
 
@@ -80,4 +82,5 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\powerbi\validate_pbip.
 
 El script no ejecuta Power Query, DAX ni renderiza el lienzo. Despues de desplegar/cargar
 SQL Server, abra `ArgentinaRetail.pbip`, configure parametros, actualice, compruebe los
-totales contra `portfolio_data/`, revise escritorio/movil y guarde el PBIP.
+totales contra `portfolio_data/`, revise escritorio/movil y guarde una copia PBIX para
+Release. Restaure parametros portables antes de commitear cambios del PBIP.

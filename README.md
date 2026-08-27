@@ -83,6 +83,7 @@ personales, caches ni PBIX.
 | [Arquitectura](docs/architecture.md) | Flujo, granos y controles. |
 | [Diccionario](docs/data_dictionary.md) | Contrato de los cinco datasets. |
 | [Operaciones](docs/operations.md) | Pipeline, SQL Server, Power BI y recuperacion. |
+| [Releases](docs/releases.md) | Empaquetado de PBIX y hashes como activos de GitHub Release. |
 | [SQL highlights](docs/sql_highlights.md) | Patrones T-SQL centrales. |
 | [Power BI](powerbi/README.md) | Modelo, paginas, conexion y validacion. |
 | [English README](README_EN.md) | Concise English project overview. |
