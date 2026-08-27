@@ -7,8 +7,8 @@ Caso reproducible de Data Analytics sobre ventas mensuales de supermercados y
 autoservicios mayoristas de Argentina. Separa crecimiento nominal de evolucion real y
 explica cambios en pagos, categorias y canales desde 2017 con Python, SQL Server y Power BI.
 
-El dashboard no esta publicado. El repositorio incluye el proyecto PBIP versionable y su
-validador; la actualizacion/render final requiere Power BI Desktop y una instancia SQL Server.
+El PBIX esta publicado como activo de GitHub Release. No hay publicacion en Power BI
+Service; la actualizacion/render final requiere Power BI Desktop y una instancia SQL Server.
 
 ## Impacto en 60 segundos
 
