@@ -1,0 +1,190 @@
+{
+  "name": "Pulso del retail argentino",
+  "id": "ArgentinaRetail",
+  "compatibilityLevel": 1606,
+  "model": {
+    "name": "Pulso del retail argentino",
+    "culture": "es-AR",
+    "defaultPowerBIDataSourceVersion": "powerBI_V3",
+    "tables": [
+      {
+        "name": "monthly_summary",
+        "description": "Ventas nominales, constantes e indices reales por mes y formato. Los formatos no se suman.",
+        "columns": [
+          {"name": "month", "dataType": "dateTime", "sourceColumn": "month", "formatString": "MMM yyyy", "summarizeBy": "none"},
+          {"name": "retail_format", "dataType": "string", "isHidden": true, "sourceColumn": "retail_format", "summarizeBy": "none"},
+          {"name": "nominal_sales_million_ars", "dataType": "double", "sourceColumn": "nominal_sales_million_ars", "formatString": "$ #,##0.0,, M", "summarizeBy": "sum"},
+          {"name": "constant_sales_million_ars", "dataType": "double", "sourceColumn": "constant_sales_million_ars", "formatString": "$ #,##0.0,, M", "summarizeBy": "sum"},
+          {"name": "real_sales_index_original", "dataType": "double", "sourceColumn": "real_sales_index_original", "formatString": "0.0", "summarizeBy": "none"},
+          {"name": "real_sales_index_sa", "dataType": "double", "sourceColumn": "real_sales_index_sa", "formatString": "0.0", "summarizeBy": "none"},
+          {"name": "real_sales_index_trend", "dataType": "double", "sourceColumn": "real_sales_index_trend", "formatString": "0.0", "summarizeBy": "none"},
+          {"name": "nominal_sales_yoy_pct", "dataType": "double", "sourceColumn": "nominal_sales_yoy_pct", "formatString": "0.0'%';-0.0'%'", "summarizeBy": "none"},
+          {"name": "real_sales_yoy_pct", "dataType": "double", "sourceColumn": "real_sales_yoy_pct", "formatString": "0.0'%';-0.0'%'", "summarizeBy": "none"},
+          {"name": "real_sales_sa_mom_pct", "dataType": "double", "sourceColumn": "real_sales_sa_mom_pct", "formatString": "0.0'%';-0.0'%'", "summarizeBy": "none"},
+          {"name": "is_partial_year", "dataType": "boolean", "sourceColumn": "is_partial_year", "summarizeBy": "none"}
+        ],
+        "partitions": [{"name": "monthly_summary", "mode": "import", "source": {"type": "m", "expression": "let\n    Source = Sql.Database(ServerName, DatabaseName, [CreateNavigationProperties=false]),\n    Data = Value.NativeQuery(Source, \"SELECT month, retail_format, nominal_sales_million_ars, constant_sales_million_ars, real_sales_index_original, real_sales_index_sa, real_sales_index_trend, nominal_sales_yoy_pct, real_sales_yoy_pct, real_sales_sa_mom_pct, is_partial_year FROM retail.monthly_summary\", null, [EnableFolding=true]),\n    Typed = Table.TransformColumnTypes(Data, {{\"month\", type date}, {\"retail_format\", type text}, {\"nominal_sales_million_ars\", type number}, {\"constant_sales_million_ars\", type number}, {\"real_sales_index_original\", type number}, {\"real_sales_index_sa\", type number}, {\"real_sales_index_trend\", type number}, {\"nominal_sales_yoy_pct\", type number}, {\"real_sales_yoy_pct\", type number}, {\"real_sales_sa_mom_pct\", type number}, {\"is_partial_year\", type logical}})\nin\n    Typed"}}]
+      },
+      {
+        "name": "payment_mix",
+        "description": "Mix mensual de medios de pago en miles de ARS corrientes.",
+        "columns": [
+          {"name": "month", "dataType": "dateTime", "sourceColumn": "month", "formatString": "MMM yyyy", "summarizeBy": "none"},
+          {"name": "retail_format", "dataType": "string", "isHidden": true, "sourceColumn": "retail_format", "summarizeBy": "none"},
+          {"name": "payment_method", "dataType": "string", "isHidden": true, "sourceColumn": "payment_method", "summarizeBy": "none"},
+          {"name": "sales_thousand_ars", "dataType": "double", "sourceColumn": "sales_thousand_ars", "formatString": "$ #,##0 K", "summarizeBy": "sum"},
+          {"name": "share_pct", "dataType": "double", "sourceColumn": "share_pct", "formatString": "0.0'%'", "summarizeBy": "none"},
+          {"name": "is_observed", "dataType": "boolean", "isHidden": true, "sourceColumn": "is_observed", "summarizeBy": "none"}
+        ],
+        "partitions": [{"name": "payment_mix", "mode": "import", "source": {"type": "m", "expression": "let\n    Source = Sql.Database(ServerName, DatabaseName, [CreateNavigationProperties=false]),\n    Data = Value.NativeQuery(Source, \"SELECT month, retail_format, payment_method, sales_thousand_ars, share_pct, is_observed FROM retail.payment_mix\", null, [EnableFolding=true]),\n    Typed = Table.TransformColumnTypes(Data, {{\"month\", type date}, {\"retail_format\", type text}, {\"payment_method\", type text}, {\"sales_thousand_ars\", type number}, {\"share_pct\", type number}, {\"is_observed\", type logical}})\nin\n    Typed"}}]
+      },
+      {
+        "name": "category_mix",
+        "description": "Mix mensual nominal por categoria; no representa volumen fisico.",
+        "columns": [
+          {"name": "month", "dataType": "dateTime", "sourceColumn": "month", "formatString": "MMM yyyy", "summarizeBy": "none"},
+          {"name": "retail_format", "dataType": "string", "isHidden": true, "sourceColumn": "retail_format", "summarizeBy": "none"},
+          {"name": "category", "dataType": "string", "isHidden": true, "sourceColumn": "category", "summarizeBy": "none"},
+          {"name": "sales_thousand_ars", "dataType": "double", "sourceColumn": "sales_thousand_ars", "formatString": "$ #,##0 K", "summarizeBy": "sum"},
+          {"name": "share_pct", "dataType": "double", "sourceColumn": "share_pct", "formatString": "0.0'%'", "summarizeBy": "none"},
+          {"name": "is_observed", "dataType": "boolean", "isHidden": true, "sourceColumn": "is_observed", "summarizeBy": "none"},
+          {"name": "comparable_across_formats", "dataType": "boolean", "sourceColumn": "comparable_across_formats", "summarizeBy": "none"}
+        ],
+        "partitions": [{"name": "category_mix", "mode": "import", "source": {"type": "m", "expression": "let\n    Source = Sql.Database(ServerName, DatabaseName, [CreateNavigationProperties=false]),\n    Data = Value.NativeQuery(Source, \"SELECT month, retail_format, category, sales_thousand_ars, share_pct, is_observed, comparable_across_formats FROM retail.category_mix\", null, [EnableFolding=true]),\n    Typed = Table.TransformColumnTypes(Data, {{\"month\", type date}, {\"retail_format\", type text}, {\"category\", type text}, {\"sales_thousand_ars\", type number}, {\"share_pct\", type number}, {\"is_observed\", type logical}, {\"comparable_across_formats\", type logical}})\nin\n    Typed"}}]
+      },
+      {
+        "name": "channel_mix",
+        "description": "Mix mensual por canal. Mayoristas conserva nulos estructurales desde septiembre de 2022.",
+        "columns": [
+          {"name": "month", "dataType": "dateTime", "sourceColumn": "month", "formatString": "MMM yyyy", "summarizeBy": "none"},
+          {"name": "retail_format", "dataType": "string", "isHidden": true, "sourceColumn": "retail_format", "summarizeBy": "none"},
+          {"name": "channel", "dataType": "string", "isHidden": true, "sourceColumn": "channel", "summarizeBy": "none"},
+          {"name": "sales_thousand_ars", "dataType": "double", "sourceColumn": "sales_thousand_ars", "formatString": "$ #,##0 K", "summarizeBy": "sum"},
+          {"name": "share_pct", "dataType": "double", "sourceColumn": "share_pct", "formatString": "0.0'%'", "summarizeBy": "none"},
+          {"name": "is_observed", "dataType": "boolean", "sourceColumn": "is_observed", "summarizeBy": "none"}
+        ],
+        "partitions": [{"name": "channel_mix", "mode": "import", "source": {"type": "m", "expression": "let\n    Source = Sql.Database(ServerName, DatabaseName, [CreateNavigationProperties=false]),\n    Data = Value.NativeQuery(Source, \"SELECT month, retail_format, channel, sales_thousand_ars, share_pct, is_observed FROM retail.channel_mix\", null, [EnableFolding=true]),\n    Typed = Table.TransformColumnTypes(Data, {{\"month\", type date}, {\"retail_format\", type text}, {\"channel\", type text}, {\"sales_thousand_ars\", type number}, {\"share_pct\", type number}, {\"is_observed\", type logical}})\nin\n    Typed"}}]
+      },
+      {
+        "name": "quality_checks",
+        "description": "Controles fuente que habilitan o bloquean la publicacion.",
+        "columns": [
+          {"name": "source", "dataType": "string", "isHidden": true, "sourceColumn": "source", "summarizeBy": "none"},
+          {"name": "check", "dataType": "string", "sourceColumn": "check", "summarizeBy": "none"},
+          {"name": "severity", "dataType": "string", "sourceColumn": "severity", "summarizeBy": "none"},
+          {"name": "status", "dataType": "string", "sourceColumn": "status", "summarizeBy": "none"},
+          {"name": "detail", "dataType": "string", "sourceColumn": "detail", "summarizeBy": "none"}
+        ],
+        "partitions": [{"name": "quality_checks", "mode": "import", "source": {"type": "m", "expression": "let\n    Source = Sql.Database(ServerName, DatabaseName, [CreateNavigationProperties=false]),\n    Data = Value.NativeQuery(Source, \"SELECT source, check_name AS [check], severity, status, detail FROM retail.quality_checks\", null, [EnableFolding=true]),\n    Typed = Table.TransformColumnTypes(Data, {{\"source\", type text}, {\"check\", type text}, {\"severity\", type text}, {\"status\", type text}, {\"detail\", type text}})\nin\n    Typed"}}]
+      },
+      {
+        "name": "Calendario",
+        "description": "Dimension diaria desde el primer hasta el ultimo mes publicado.",
+        "dataCategory": "Time",
+        "columns": [
+          {"name": "Fecha", "dataType": "dateTime", "sourceColumn": "Fecha", "formatString": "yyyy-MM-dd", "summarizeBy": "none"},
+          {"name": "Anio", "dataType": "int64", "sourceColumn": "Anio", "formatString": "0", "summarizeBy": "none"},
+          {"name": "Mes numero", "dataType": "int64", "sourceColumn": "Mes numero", "formatString": "0", "summarizeBy": "none"},
+          {"name": "Mes indice", "dataType": "int64", "isHidden": true, "sourceColumn": "Mes indice", "summarizeBy": "none"},
+          {"name": "Mes", "dataType": "string", "sourceColumn": "Mes", "sortByColumn": "Mes indice", "summarizeBy": "none"}
+        ],
+        "partitions": [{"name": "Calendario", "mode": "import", "source": {"type": "m", "expression": "let\n    StartDate = Date.From(List.Min(monthly_summary[month])),\n    EndDate = Date.EndOfMonth(Date.From(List.Max(monthly_summary[month]))),\n    Dates = List.Dates(StartDate, Duration.Days(EndDate - StartDate) + 1, #duration(1, 0, 0, 0)),\n    Source = Table.FromList(Dates, Splitter.SplitByNothing(), {\"Fecha\"}),\n    Typed = Table.TransformColumnTypes(Source, {{\"Fecha\", type date}}),\n    AddYear = Table.AddColumn(Typed, \"Anio\", each Date.Year([Fecha]), Int64.Type),\n    AddMonthNumber = Table.AddColumn(AddYear, \"Mes numero\", each Date.Month([Fecha]), Int64.Type),\n    AddMonthIndex = Table.AddColumn(AddMonthNumber, \"Mes indice\", each Date.Year([Fecha]) * 100 + Date.Month([Fecha]), Int64.Type),\n    AddMonth = Table.AddColumn(AddMonthIndex, \"Mes\", each Date.ToText([Fecha], \"MMM yyyy\", \"es-AR\"), type text)\nin\n    AddMonth"}}]
+      },
+      {
+        "name": "Formato",
+        "description": "Dimension de formato; obliga a analizar cada universo por separado.",
+        "columns": [
+          {"name": "format_key", "dataType": "string", "sourceColumn": "format_key", "summarizeBy": "none"},
+          {"name": "Formato", "dataType": "string", "sourceColumn": "Formato", "summarizeBy": "none"},
+          {"name": "Orden", "dataType": "int64", "isHidden": true, "sourceColumn": "Orden", "summarizeBy": "none"}
+        ],
+        "partitions": [{"name": "Formato", "mode": "import", "source": {"type": "m", "expression": "#table(type table [format_key = text, Formato = text, Orden = Int64.Type], {{\"supermarkets\", \"Supermercados\", 1}, {\"wholesale\", \"Autoservicios mayoristas\", 2}})"}}]
+      },
+      {
+        "name": "MedioPago",
+        "columns": [
+          {"name": "payment_key", "dataType": "string", "sourceColumn": "payment_key", "summarizeBy": "none"},
+          {"name": "Medio de pago", "dataType": "string", "sourceColumn": "Medio de pago", "summarizeBy": "none"},
+          {"name": "Orden", "dataType": "int64", "isHidden": true, "sourceColumn": "Orden", "summarizeBy": "none"}
+        ],
+        "partitions": [{"name": "MedioPago", "mode": "import", "source": {"type": "m", "expression": "#table(type table [payment_key = text, #\"Medio de pago\" = text, Orden = Int64.Type], {{\"cash\", \"Efectivo\", 1}, {\"debit_card\", \"Tarjeta de debito\", 2}, {\"credit_card\", \"Tarjeta de credito\", 3}, {\"other\", \"Otros medios\", 4}})"}}]
+      },
+      {
+        "name": "Categoria",
+        "columns": [
+          {"name": "category_key", "dataType": "string", "sourceColumn": "category_key", "summarizeBy": "none"},
+          {"name": "Categoria", "dataType": "string", "sourceColumn": "Categoria", "summarizeBy": "none"}
+        ],
+        "partitions": [{"name": "Categoria", "mode": "import", "source": {"type": "m", "expression": "#table(type table [category_key = text, Categoria = text], {{\"bakery\", \"Panaderia\"}, {\"beverages\", \"Bebidas\"}, {\"cleaning_and_personal_care\", \"Limpieza y perfumeria\"}, {\"clothing_and_home_textiles\", \"Indumentaria y textiles\"}, {\"dairy\", \"Lacteos\"}, {\"electronics_and_home\", \"Electronica y hogar\"}, {\"fruit_and_vegetables\", \"Verduleria y fruteria\"}, {\"grocery\", \"Almacen\"}, {\"meat\", \"Carnes\"}, {\"other\", \"Otros\"}, {\"prepared_food\", \"Alimentos preparados\"}})"}}]
+      },
+      {
+        "name": "Canal",
+        "columns": [
+          {"name": "channel_key", "dataType": "string", "sourceColumn": "channel_key", "summarizeBy": "none"},
+          {"name": "Canal", "dataType": "string", "sourceColumn": "Canal", "summarizeBy": "none"}
+        ],
+        "partitions": [{"name": "Canal", "mode": "import", "source": {"type": "m", "expression": "#table(type table [channel_key = text, Canal = text], {{\"showroom\", \"Salon\"}, {\"online\", \"Online\"}})"}}]
+      },
+      {
+        "name": "Medidas",
+        "description": "Medidas de ventas, mix, cobertura y calidad. Los KPIs de negocio exigen un formato unico.",
+        "columns": [{"name": "Valor", "dataType": "int64", "isHidden": true, "sourceColumn": "Valor"}],
+        "partitions": [{"name": "Medidas", "mode": "import", "source": {"type": "m", "expression": "#table(type table [Valor = Int64.Type], {{1}})"}}],
+        "measures": [
+          {"name": "Fecha maxima", "expression": "MAX('monthly_summary'[month])", "formatString": "dd MMM yyyy"},
+          {"name": "Formato unico", "description": "Uno cuando el contexto contiene exactamente un universo de encuesta.", "expression": "IF(HASONEVALUE('Formato'[format_key]), 1, 0)", "formatString": "0"},
+          {"name": "Ventas nominales", "description": "Millones de ARS corrientes; devuelve BLANK si se seleccionan ambos formatos.", "expression": "IF([Formato unico] = 1, SUM('monthly_summary'[nominal_sales_million_ars]))", "formatString": "$ #,##0.0,, M"},
+          {"name": "Ventas nominales ultimo mes", "expression": "VAR LastMonth = [Fecha maxima] RETURN CALCULATE([Ventas nominales], KEEPFILTERS('monthly_summary'[month] = LastMonth))", "formatString": "$ #,##0.0,, M"},
+          {"name": "Indice real", "description": "Indice original base 2017=100 para un unico formato.", "expression": "IF([Formato unico] = 1, AVERAGE('monthly_summary'[real_sales_index_original]))", "formatString": "0.0"},
+          {"name": "Indice real ultimo mes", "expression": "VAR LastMonth = [Fecha maxima] RETURN CALCULATE([Indice real], KEEPFILTERS('monthly_summary'[month] = LastMonth))", "formatString": "0.0"},
+          {"name": "Variacion real interanual", "expression": "VAR LastMonth = [Fecha maxima] RETURN IF([Formato unico] = 1, CALCULATE(AVERAGE('monthly_summary'[real_sales_yoy_pct]), KEEPFILTERS('monthly_summary'[month] = LastMonth)) / 100)", "formatString": "0.0%"},
+          {"name": "Variacion real mensual SA", "expression": "VAR LastMonth = [Fecha maxima] RETURN IF([Formato unico] = 1, CALCULATE(AVERAGE('monthly_summary'[real_sales_sa_mom_pct]), KEEPFILTERS('monthly_summary'[month] = LastMonth)) / 100)", "formatString": "0.0%"},
+          {"name": "Tendencia real", "expression": "IF([Formato unico] = 1, AVERAGE('monthly_summary'[real_sales_index_trend]))", "formatString": "0.0"},
+          {"name": "Share pago", "expression": "IF([Formato unico] = 1, AVERAGE('payment_mix'[share_pct]) / 100)", "formatString": "0.0%"},
+          {"name": "Fecha maxima pago", "expression": "MAX('payment_mix'[month])", "formatString": "dd MMM yyyy"},
+          {"name": "Share pago ultimo", "expression": "VAR LastMonth = [Fecha maxima pago] RETURN CALCULATE([Share pago], KEEPFILTERS('payment_mix'[month] = LastMonth))", "formatString": "0.0%"},
+          {"name": "Share efectivo ultimo", "expression": "CALCULATE([Share pago ultimo], 'MedioPago'[payment_key] = \"cash\")", "formatString": "0.0%"},
+          {"name": "Share debito ultimo", "expression": "CALCULATE([Share pago ultimo], 'MedioPago'[payment_key] = \"debit_card\")", "formatString": "0.0%"},
+          {"name": "Share credito ultimo", "expression": "CALCULATE([Share pago ultimo], 'MedioPago'[payment_key] = \"credit_card\")", "formatString": "0.0%"},
+          {"name": "Share otros ultimo", "expression": "CALCULATE([Share pago ultimo], 'MedioPago'[payment_key] = \"other\")", "formatString": "0.0%"},
+          {"name": "Cambio pago interanual pp", "expression": "VAR LastMonth = [Fecha maxima pago] VAR CurrentShare = CALCULATE([Share pago], KEEPFILTERS('payment_mix'[month] = LastMonth)) VAR PriorShare = CALCULATE([Share pago], REMOVEFILTERS('Calendario'), 'payment_mix'[month] = EDATE(LastMonth, -12)) RETURN (CurrentShare - PriorShare) * 100", "formatString": "0.0 'pp';-0.0 'pp'"},
+          {"name": "Ventas categoria", "description": "Ventas nominales por categoria en miles de ARS; no equivalen a volumen.", "expression": "IF([Formato unico] = 1, SUM('category_mix'[sales_thousand_ars]))", "formatString": "$ #,##0 K"},
+          {"name": "Share categoria", "expression": "IF([Formato unico] = 1, AVERAGE('category_mix'[share_pct]) / 100)", "formatString": "0.0%"},
+          {"name": "Fecha maxima categoria", "expression": "MAX('category_mix'[month])", "formatString": "dd MMM yyyy"},
+          {"name": "Ventas categoria ultimo mes", "expression": "VAR LastMonth = [Fecha maxima categoria] RETURN CALCULATE([Ventas categoria], KEEPFILTERS('category_mix'[month] = LastMonth))", "formatString": "$ #,##0 K"},
+          {"name": "Share categoria ultimo mes", "expression": "VAR LastMonth = [Fecha maxima categoria] RETURN CALCULATE([Share categoria], KEEPFILTERS('category_mix'[month] = LastMonth))", "formatString": "0.0%"},
+          {"name": "Variacion categoria nominal YoY", "expression": "VAR LastMonth = [Fecha maxima categoria] VAR CurrentSales = CALCULATE([Ventas categoria], KEEPFILTERS('category_mix'[month] = LastMonth)) VAR PriorSales = CALCULATE([Ventas categoria], REMOVEFILTERS('Calendario'), 'category_mix'[month] = EDATE(LastMonth, -12)) RETURN DIVIDE(CurrentSales - PriorSales, PriorSales)", "formatString": "0.0%"},
+          {"name": "Ventas canal", "expression": "IF([Formato unico] = 1, SUM('channel_mix'[sales_thousand_ars]))", "formatString": "$ #,##0 K"},
+          {"name": "Share canal", "expression": "IF([Formato unico] = 1, CALCULATE(AVERAGE('channel_mix'[share_pct]), 'channel_mix'[is_observed] = TRUE()) / 100)", "formatString": "0.0%"},
+          {"name": "Share online", "expression": "CALCULATE([Share canal], 'Canal'[channel_key] = \"online\")", "formatString": "0.0%"},
+          {"name": "Share online ultimo", "expression": "VAR LastMonth = CALCULATE(MAX('channel_mix'[month]), 'channel_mix'[is_observed] = TRUE(), 'Canal'[channel_key] = \"online\") RETURN CALCULATE([Share online], KEEPFILTERS('channel_mix'[month] = LastMonth))", "formatString": "0.0%"},
+          {"name": "Ultima fecha canal", "expression": "CALCULATE(MAX('channel_mix'[month]), 'channel_mix'[is_observed] = TRUE())", "formatString": "dd MMM yyyy"},
+          {"name": "Meses canal no observados", "expression": "CALCULATE(COUNTROWS('channel_mix'), 'channel_mix'[is_observed] = FALSE())", "formatString": "#,0"},
+          {"name": "Controles", "expression": "COUNTROWS('quality_checks')", "formatString": "#,0"},
+          {"name": "Fallas HIGH", "expression": "CALCULATE(COUNTROWS('quality_checks'), 'quality_checks'[severity] = \"HIGH\", 'quality_checks'[status] = \"FAIL\")", "formatString": "#,0"},
+          {"name": "Controles PASS", "expression": "CALCULATE(COUNTROWS('quality_checks'), 'quality_checks'[status] = \"PASS\")", "formatString": "#,0"},
+          {"name": "Tasa aprobacion", "expression": "DIVIDE([Controles PASS], [Controles])", "formatString": "0.0%"},
+          {"name": "Gate publicacion", "expression": "IF([Fallas HIGH] = 0 && CALCULATE(COUNTROWS('quality_checks'), 'quality_checks'[severity] = \"HIGH\") > 0, \"PASS\", \"BLOCKED\")"}
+        ]
+      }
+    ],
+    "relationships": [
+      {"name": "Calendario_monthly", "toTable": "Calendario", "toColumn": "Fecha", "fromTable": "monthly_summary", "fromColumn": "month"},
+      {"name": "Calendario_payment", "toTable": "Calendario", "toColumn": "Fecha", "fromTable": "payment_mix", "fromColumn": "month"},
+      {"name": "Calendario_category", "toTable": "Calendario", "toColumn": "Fecha", "fromTable": "category_mix", "fromColumn": "month"},
+      {"name": "Calendario_channel", "toTable": "Calendario", "toColumn": "Fecha", "fromTable": "channel_mix", "fromColumn": "month"},
+      {"name": "Formato_monthly", "toTable": "Formato", "toColumn": "format_key", "fromTable": "monthly_summary", "fromColumn": "retail_format"},
+      {"name": "Formato_payment", "toTable": "Formato", "toColumn": "format_key", "fromTable": "payment_mix", "fromColumn": "retail_format"},
+      {"name": "Formato_category", "toTable": "Formato", "toColumn": "format_key", "fromTable": "category_mix", "fromColumn": "retail_format"},
+      {"name": "Formato_channel", "toTable": "Formato", "toColumn": "format_key", "fromTable": "channel_mix", "fromColumn": "retail_format"},
+      {"name": "Formato_quality", "toTable": "Formato", "toColumn": "format_key", "fromTable": "quality_checks", "fromColumn": "source"},
+      {"name": "MedioPago_payment", "toTable": "MedioPago", "toColumn": "payment_key", "fromTable": "payment_mix", "fromColumn": "payment_method"},
+      {"name": "Categoria_category", "toTable": "Categoria", "toColumn": "category_key", "fromTable": "category_mix", "fromColumn": "category"},
+      {"name": "Canal_channel", "toTable": "Canal", "toColumn": "channel_key", "fromTable": "channel_mix", "fromColumn": "channel"}
+    ],
+    "expressions": [
+      {"name": "ServerName", "description": "SQL Server configurable; no contiene credenciales.", "kind": "m", "expression": "\"localhost\" meta [IsParameterQuery=true, Type=\"Text\", IsParameterQueryRequired=true]"},
+      {"name": "DatabaseName", "description": "Base SQL Server configurable.", "kind": "m", "expression": "\"ArgentinaRetailSales\" meta [IsParameterQuery=true, Type=\"Text\", IsParameterQueryRequired=true]"}
+    ]
+  }
+}

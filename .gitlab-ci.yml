@@ -1,0 +1,24 @@
+stages:
+  - quality
+
+python-quality:
+  stage: quality
+  image: python:3.11-slim
+  before_script:
+    - python -m pip install --disable-pip-version-check -e ".[dev]"
+  script:
+    - ruff check .
+    - ruff format --check .
+    - pytest --cov=argentina_retail_sales --cov-report=term-missing --cov-report=xml
+  artifacts:
+    when: always
+    reports:
+      coverage_report:
+        coverage_format: cobertura
+        path: coverage.xml
+
+powerbi-structure:
+  stage: quality
+  image: mcr.microsoft.com/powershell:lts-ubuntu-22.04
+  script:
+    - pwsh -NoProfile -File ./powerbi/validate_pbip.ps1 -SkipTom

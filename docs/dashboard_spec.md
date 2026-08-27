@@ -2,70 +2,100 @@
 
 ## Business goal
 
-Explicar si el retail argentino crece en terminos reales y como cambia su composicion
-por formato, medio de pago, canal y categoria.
+Explicar si el retail argentino crece en terminos reales y como cambia su composicion por
+formato, medio de pago, canal y categoria, sin convertir universos de encuesta distintos
+en una cifra de mercado no defendible.
 
 ## Audience
 
-Gerencia comercial, responsables de trade marketing y analistas de ventas.
+Gerencia comercial, responsables de trade marketing y analistas de ventas. El dashboard
+prioriza lectura ejecutiva y mantiene disponible el detalle de calidad para analistas.
 
-## Pagina 1: panorama ejecutivo
+## KPIs
 
-- KPIs: indice real, variacion real interanual, variacion desestacionalizada mensual y ventas nominales.
-- Tendencia mensual de indices reales por formato.
-- Separacion visual explicita entre nominal y real.
-- Filtro: formato y periodo.
+| KPI | Unidad | Regla |
+|---|---|---|
+| Indice real original | base 2017=100 | Un solo formato; ultimo mes del contexto. |
+| Variacion real interanual | porcentaje | Indice original contra igual mes anterior. |
+| Variacion real mensual SA | porcentaje | Indice desestacionalizado contra mes anterior. |
+| Ventas nominales | millones ARS corrientes | Nunca comparte eje con indices. |
+| Share de pago/categoria/canal | porcentaje | Denominador dentro de mes y formato. |
+| Cambio de share | puntos porcentuales | Share contra igual mes anterior. |
+| Fecha efectiva | fecha | Maximo mes realmente observado por fuente/visual. |
+| Gate de calidad | PASS/BLOCKED | Requiere al menos un `HIGH` y cero fallas `HIGH`. |
 
-## Pagina 2: medios de pago
+Las medidas de negocio devuelven `BLANK` si el contexto incluye ambos formatos. No se
+presenta su suma ni una razon de facturacion como market share.
 
-- Share de efectivo, debito, credito y otros medios.
-- Cambio en puntos porcentuales contra el ano anterior.
-- Small multiples por formato.
+## Filters
 
-## Pagina 3: categorias
+- Formato: selector obligatorio y visible, con supermercados o autoservicios mayoristas.
+- Periodo: ano desde `Calendario`; el eje permite bajar a mes.
+- Medio de pago, categoria y canal: seleccion mediante leyenda/visual.
+- Categoria: selector dedicado para narrativa y detalle.
+- Disponibilidad: `is_observed` se aplica dentro de medidas de canal, no como reemplazo por cero.
 
-- Mix nominal por grupo de articulos.
-- Variacion interanual nominal con advertencia de inflacion por categoria.
-- Foco de storytelling en almacen, bebidas, panaderia, lacteos y carnes.
+## Pagina 1: Panorama ejecutivo
 
-## Pagina 4: canales y calidad
+- Top: indice real, variacion real interanual, variacion desestacionalizada mensual y ventas nominales.
+- Middle: tendencia mensual del indice original y tendencia-ciclo.
+- Bottom: ventas nominales en un eje separado.
+- Pregunta: la facturacion corriente coincide con recuperacion real?
 
-- Share online de supermercados desde 2017.
-- Mayoristas solo hasta agosto de 2022.
-- Matriz de disponibilidad y controles de reconciliacion.
+## Pagina 2: Medios de pago
 
-## Diseno
+- Top: ultimo share de efectivo, debito, credito y otros.
+- Middle: lineas de participacion mensual por medio.
+- Bottom: cambio interanual en puntos porcentuales.
+- Small multiples por formato no son necesarios porque el selector impide consolidarlos;
+  la comparacion se realiza alternando el formato con el mismo layout.
 
-- Paleta: azul profundo para supermercados, terracota para mayoristas y gris para contexto.
-- Tooltips con fuente, unidad, fecha efectiva y disponibilidad.
-- Nada de ejes duales para mezclar pesos nominales con indices reales.
-- Navegacion y tarjetas adaptadas a una columna en movil.
+## Pagina 3: Categorias
 
-## Hito de implementacion
+- Top: ventas nominales, share, variacion nominal interanual y fecha efectiva.
+- Middle: mix por categoria, con foco narrativo sugerido en almacen, bebidas, panaderia,
+  lacteos y carnes.
+- Bottom: ranking de share del ultimo mes.
+- Advertencia permanente: variacion nominal por categoria no equivale a volumen.
 
-### 1. Capa SQL Server
+## Pagina 4: Canales y calidad
 
-- Cargar los cinco CSV validados en el esquema `retail` sin recalcular las metricas de Python.
-- Crear tablas `monthly_summary`, `payment_mix`, `category_mix`, `channel_mix` y
-  `quality_checks` con fechas y tipos numericos explicitos.
-- Definir claves unicas segun el grano documentado y conservar `is_observed` como indicador
-  de disponibilidad.
-- Ejecutar la carga solo despues de que todos los controles `HIGH` tengan estado `PASS`.
+- Top: share online, ultima fecha observada, fallas `HIGH` y gate de publicacion.
+- Middle: mix online/salon; la serie mayorista termina en agosto de 2022.
+- Bottom: tabla de fuente, severidad, estado, control y detalle.
+- La cobertura debe explicar el faltante mayorista, no ocultarlo.
 
-### 2. Modelo Power BI
+## Layout y paleta
 
-- Importar desde SQL Server y relacionar los hechos con una tabla calendario y dimensiones
-  de formato, pago, categoria y canal.
-- Mantener las medidas nominales, reales y de participacion separadas por unidad.
-- Mostrar la fecha maxima observada por visual; el canal mayorista debe terminar en agosto
-  de 2022 aunque las otras paginas lleguen a mayo de 2026.
-- Validar totales y KPIs contra los CSV antes de publicar el PBIX.
+- Lienzo 16:9 de `1280 x 720`.
+- Orden estable: KPIs arriba, tendencias al centro y breakdowns/calidad abajo.
+- Supermercados: azul profundo `#164B73`; mayoristas: terracota `#B65F45`.
+- Acentos: verde petroleo `#2D7C78`, ocre `#D2A449`; contexto `#667680`.
+- Fondo marfil `#F5F1E8`, tarjetas `#FFFEFA`, texto `#183044`.
+- Rojo se reserva para estados bloqueantes; no se usa como color decorativo.
 
-### 3. Criterio de cierre
+## Interactions, drilldowns y tooltips
 
-- Las cuatro paginas funcionan en escritorio y movil.
-- Los filtros no permiten sumar ambos formatos como una unica cifra de mercado.
-- La pagina de calidad expone fuente, cobertura, faltantes estructurales y resultado de los
-  controles de reconciliacion.
-- El repositorio incluye capturas y un enlace al dashboard publicado, pero no credenciales
-  ni archivos de conexion locales.
+- Selecciones de leyenda y barras filtran los visuales de la pagina.
+- `defaultDrillFilterOtherVisuals` mantiene el contexto al bajar de ano a mes.
+- No hay drill-through a filas transaccionales porque la fuente es mensual agregada.
+- Tooltips mejorados deben incluir formato, mes, unidad, valor y fecha efectiva.
+- Titulos declaran `nominal`, `real`, `%`, `pp` y limitaciones de cobertura.
+- No se permiten ejes duales que mezclen ARS nominales con indices reales.
+
+## Mobile behavior
+
+El orden movil es selector, cuatro KPIs, tendencia y breakdown. Las tarjetas deben ocupar
+una columna y los rankings deben limitar etiquetas antes de habilitar scroll. El PBIR
+versionado no certifica un layout movil especifico porque esa disposicion requiere render
+en Power BI Desktop; se debe crear/revisar antes de publicar y capturar evidencia.
+
+## Acceptance criteria
+
+- Las cuatro paginas abren y actualizan desde SQL Server sin credenciales versionadas.
+- Todos los KPIs quedan en blanco con mas de un formato seleccionado.
+- Los totales visibles reconcilian con los cinco CSV.
+- La fecha de canal mayorista no supera agosto de 2022.
+- El gate muestra `PASS` solo con todos los controles `HIGH/PASS`.
+- El validador PowerShell y pytest aprueban estructura, referencias y contratos.
+- Escritorio y movil se revisan manualmente en Power BI Desktop antes de publicar.

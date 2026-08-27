@@ -11,8 +11,9 @@ permissions:
 
 jobs:
   quality:
+    name: Lint, tests and structural audit
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
 
     steps:
       - uses: actions/checkout@v4
@@ -27,4 +28,7 @@ jobs:
       - name: Ruff format
         run: ruff format --check .
       - name: Tests with coverage
-        run: pytest --cov=argentina_retail_sales --cov-report=term-missing
+        run: pytest --cov=argentina_retail_sales --cov-report=term-missing --cov-report=xml
+      - name: Validate Power BI PBIP
+        shell: pwsh
+        run: ./powerbi/validate_pbip.ps1 -SkipTom

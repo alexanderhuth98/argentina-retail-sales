@@ -1,0 +1,5 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {"type": "Report", "displayName": "ArgentinaRetail"},
+  "config": {"version": "2.0", "logicalId": "733c9bb7-c4e6-40e4-b54b-b30ad868fc81"}
+}

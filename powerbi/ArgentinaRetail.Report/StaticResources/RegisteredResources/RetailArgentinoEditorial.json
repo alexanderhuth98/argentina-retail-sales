@@ -1,0 +1,14 @@
+{
+  "name": "RetailArgentinoEditorial",
+  "dataColors": ["#164B73", "#B65F45", "#2D7C78", "#D2A449", "#667680", "#8E6C88"],
+  "background": "#F5F1E8",
+  "foreground": "#183044",
+  "tableAccent": "#164B73",
+  "visualStyles": {
+    "*": {"*": {
+      "title": [{"fontFamily": "Aptos Display Semibold", "fontSize": 12, "color": {"solid": {"color": "#183044"}}}],
+      "background": [{"color": {"solid": {"color": "#FFFEFA"}}, "transparency": 0}],
+      "border": [{"show": true, "color": {"solid": {"color": "#D8D1C4"}}, "radius": 5}]
+    }}
+  }
+}
