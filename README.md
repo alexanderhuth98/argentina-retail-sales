@@ -7,8 +7,12 @@ Caso reproducible de Data Analytics sobre ventas mensuales de supermercados y
 autoservicios mayoristas de Argentina. Separa crecimiento nominal de evolucion real y
 explica cambios en pagos, categorias y canales desde 2017 con Python, SQL Server y Power BI.
 
-El PBIX esta publicado como activo de GitHub Release. No hay publicacion en Power BI
-Service; la actualizacion/render final requiere Power BI Desktop y una instancia SQL Server.
+El dashboard HTML estatico se publica con GitHub Pages y funciona sin SQL Server en la
+navegacion. El PBIX complementario se mantiene como activo de GitHub Release.
+
+[Abrir dashboard HTML](https://alexanderhuth98.github.io/argentina-retail-sales/)
+
+![Dashboard HTML de Pulso del retail argentino](docs/images/dashboard_overview.png)
 
 ## Impacto en 60 segundos
 
@@ -55,6 +59,7 @@ agosto de 2022 (`0,03%`). Los `11` controles `HIGH` publicados estan en `PASS`.
 - Modela cinco hechos, calendario y cuatro dimensiones conformadas en Power BI.
 - Devuelve `BLANK` en KPIs cuando se seleccionan ambos formatos.
 - Versiona cuatro paginas PBIR y valida sus fuentes, tipos, relaciones y referencias.
+- Genera dos variantes HTML desde los mismos cinco CSV: escritorio y movil.
 
 ## Arquitectura
 
@@ -62,6 +67,7 @@ agosto de 2022 (`0,03%`). Los `11` controles `HIGH` publicados estan en `PASS`.
 Datos Argentina / INDEC -> CSV raw + SHA-256 -> pandas -> contratos y reconciliacion
     -> cinco CSV de portfolio -> staging SQL Server -> gate HIGH -> retail.*
     -> vistas y medidas -> modelo semantico PBIP -> cuatro paginas Power BI
+    -> generador Python -> site/index.html + site/mobile.html -> GitHub Pages
 ```
 
 La carga SQL reemplaza las cinco tablas dentro de una unica transaccion. Una falla hace
@@ -86,6 +92,8 @@ personales, caches ni PBIX.
 | [Releases](docs/releases.md) | Empaquetado de PBIX y hashes como activos de GitHub Release. |
 | [SQL highlights](docs/sql_highlights.md) | Patrones T-SQL centrales. |
 | [Power BI](powerbi/README.md) | Modelo, paginas, conexion y validacion. |
+| [Dashboard HTML](site/index.html) | Sitio estatico interactivo para escritorio. |
+| [Dashboard movil](site/mobile.html) | Misma funcionalidad en una columna. |
 | [English README](README_EN.md) | Concise English project overview. |
 
 ## Ejecutar
@@ -94,13 +102,15 @@ personales, caches ni PBIX.
 python -m venv .venv
 .\.venv\Scripts\python.exe -m pip install -e ".[dev]"
 .\.venv\Scripts\argentina-retail-sales.exe all
+.\.venv\Scripts\argentina-retail-sales.exe export
 .\.venv\Scripts\python.exe -m ruff check .
 .\.venv\Scripts\python.exe -m ruff format --check .
 .\.venv\Scripts\python.exe -m pytest --cov=argentina_retail_sales --cov-report=term-missing
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\powerbi\validate_pbip.ps1 -SkipTom
 ```
 
-La capa SQL se despliega con `sqlcmd -i .\sql\deploy.sql`; consulte
+`all` descarga, construye, valida y genera el sitio; `export` regenera solo el HTML desde
+`portfolio_data`. La capa SQL se despliega con `sqlcmd -i .\sql\deploy.sql`; consulte
 [`sql/README.md`](sql/README.md) antes de cargar. La CI de GitHub y GitLab ejecuta lint,
 tests, cobertura y validacion estructural PBIP.
 

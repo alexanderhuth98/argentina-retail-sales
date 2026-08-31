@@ -1,4 +1,8 @@
-# Especificacion del dashboard Power BI
+# Especificacion del dashboard
+
+La implementacion principal para portfolio es HTML estatico generado por Python en
+`site/index.html` y `site/mobile.html`. El PBIP conserva el mismo contrato analitico como
+implementacion complementaria.
 
 ## Business goal
 
@@ -92,6 +96,15 @@ en Power BI Desktop; se debe crear/revisar antes de publicar y capturar evidenci
 
 ## Acceptance criteria
 
+- El HTML se genera exclusivamente desde los cinco CSV curados y no requiere SQL Server
+  durante la navegacion.
+- `index.html` y `mobile.html` comparten renderer, datos, filtros y cuatro vistas; la
+  variante movil usa una columna y controles tactiles de al menos 44 px.
+- El selector de formato es obligatorio y de seleccion unica; nunca existe un total de
+  supermercados y mayoristas.
+- Carga, vacios, errores, faltantes de canal y bloqueo del gate tienen mensajes legibles.
+- HTML semantico, foco visible, navegacion por teclado, tabla de calidad y resumenes en
+  texto complementan los graficos.
 - Las cuatro paginas abren y actualizan desde SQL Server sin credenciales versionadas.
 - Todos los KPIs quedan en blanco con mas de un formato seleccionado.
 - Los totales visibles reconcilian con los cinco CSV.

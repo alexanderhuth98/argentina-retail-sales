@@ -7,6 +7,7 @@ RAW_DIR = DATA_DIR / "raw"
 PORTFOLIO_DATA_DIR = PROJECT_ROOT / "portfolio_data"
 OUTPUT_DIR = PROJECT_ROOT / "outputs"
 MANIFEST_DIR = PROJECT_ROOT / "manifests"
+SITE_DIR = PROJECT_ROOT / "site"
 
 SCHEMA_VERSION = "1.0.0"
 RECONCILIATION_ABS_TOLERANCE = 0.01  # Thousands of pesos.
@@ -106,5 +107,5 @@ CATEGORY_COLUMNS = {
 
 
 def ensure_directories() -> None:
-    for directory in (RAW_DIR, PORTFOLIO_DATA_DIR, OUTPUT_DIR, MANIFEST_DIR):
+    for directory in (RAW_DIR, PORTFOLIO_DATA_DIR, OUTPUT_DIR, MANIFEST_DIR, SITE_DIR):
         directory.mkdir(parents=True, exist_ok=True)
