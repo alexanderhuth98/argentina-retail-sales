@@ -16,8 +16,25 @@ python -m venv .venv
 .\.venv\Scripts\argentina-retail-sales.exe validate
 ```
 
-`all` ejecuta las tres etapas. La descarga usa un temporal, verifica el contenido y
+`all` ejecuta las cuatro etapas, incluida la exportación del dashboard. La descarga usa un temporal, verifica el contenido y
 registra URL, bytes, hora y SHA-256 en `manifests/raw_sources.jsonl`.
+
+## Dashboard HTML y assets locales
+
+`argentina-retail-sales export` regenera `site/index.html`, `site/mobile.html` y
+`site/assets/`. El sitio no descarga dependencias durante la navegación: usa Plotly Basic
+`2.35.2`, su localización en español y las fuentes Space Grotesk e IBM Plex Mono desde el
+paquete Python. El export falla si falta un archivo o no coincide con estos SHA-256:
+
+| Asset | SHA-256 |
+|---|---|
+| `plotly-basic-2.35.2.min.js` | `138c2e81014b979dc00867a93da55b7605a17495ee78dd7afb433b7f021dfcfa` |
+| `plotly-locale-es-2.35.2.js` | `1a20051d1983e522718de67dc977fe095727b6ff89bbe4a3c8c6251df841e981` |
+| `fonts/space-grotesk-variable.ttf` | `acad6de1fc93436f5c0f1f4137751ef04f1aea3063e7036535970ffcfbd79f72` |
+| `fonts/ibm-plex-mono-regular.ttf` | `6a3412f058c7d8dfd9170c41e85ade48e5156ecb89356110ca57a0a27734af46` |
+
+Los originales versionados viven en `src/argentina_retail_sales/assets/`. No se deben
+reemplazar sin actualizar versión, hashes, documentación y tests en el mismo cambio.
 
 ## SQL Server
 

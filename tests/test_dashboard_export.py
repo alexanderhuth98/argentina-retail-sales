@@ -1,9 +1,12 @@
+import hashlib
 from pathlib import Path
 
 import pandas as pd
 import pytest
 
 from argentina_retail_sales.dashboard import (
+    ASSET_HASHES,
+    ASSET_SOURCE_DIR,
     DashboardContractError,
     build_dashboard_payload,
     export_dashboard,
@@ -151,11 +154,16 @@ def test_rendered_variants_include_metadata_and_safe_content(dashboard_marts: Pa
     mobile = render_dashboard(payload, mobile=True)
 
     for html in (desktop, mobile):
-        assert '<html lang="es"' in html
+        assert '<html lang="es-AR"' in html
         assert 'name="viewport"' in html
-        assert "plotly-2.35.2.min.js" in html
+        assert 'src="assets/plotly-basic-2.35.2.min.js"' in html
+        assert "cdn.plot.ly" not in html
+        assert "https://cdn" not in html
         assert "DOMContentLoaded" in html
-        assert "node.replaceChildren();window.Plotly.react" in html
+        assert "Promise.resolve(result).then" in html
+        assert ".catch(error=>plotFailure" in html
+        assert "fallback.hidden=true" in html
+        assert "Plotly no está disponible" in html
         assert "No observado" in html
         assert "CC BY 4.0" in html
         assert "NaN" not in html
@@ -169,6 +177,46 @@ def test_rendered_variants_include_metadata_and_safe_content(dashboard_marts: Pa
     assert first_month["real_sales_yoy_pct"] is None
 
 
+def test_dashboard_identity_and_recoverable_zoom_contract(dashboard_marts: Path) -> None:
+    html = render_dashboard(build_dashboard_payload(dashboard_marts))
+
+    for token in (
+        "--bg:#0b1111",
+        "--bg-deep:#080d0d",
+        "--surface:#171d1e",
+        "--surface-raised:#1b2223",
+        "--surface-soft:#111819",
+        "--text:#edf1ef",
+        "--muted:#a5aeaa",
+        "--dim:#89938f",
+        "--mint:#9ef6e5",
+        "--mint-bright:#58e4d0",
+        "--amber:#f3ce62",
+        "--border:rgba(158,246,229,.11)",
+        "--border-strong:rgba(158,246,229,.25)",
+    ):
+        assert token in html
+    assert 'font-family:"Space Grotesk"' in html
+    assert 'font-family:"IBM Plex Mono"' in html
+    assert "box-shadow:none" in html
+    assert "Volver a proyectos" in html
+    assert "https://alexanderhuth98.github.io/#proyectos" in html
+    assert "fixedrange:false" in html
+    assert "displayModeBar:true" in html
+    assert "displaylogo:false" in html
+    assert "scrollZoom:false" in html
+    assert "doubleClick:'reset+autosize'" in html
+    assert "Restablecer vista" in html
+    assert "Plotly.relayout" in html
+
+
+def test_pinned_dashboard_assets_exist_and_match_hashes() -> None:
+    for relative_path, expected_hash in ASSET_HASHES.items():
+        asset = ASSET_SOURCE_DIR / relative_path
+        assert asset.is_file(), relative_path
+        assert hashlib.sha256(asset.read_bytes()).hexdigest() == expected_hash
+
+
 def test_export_writes_both_pages_and_pages_support_files(
     dashboard_marts: Path, tmp_path: Path
 ) -> None:
@@ -178,6 +226,8 @@ def test_export_writes_both_pages_and_pages_support_files(
     assert mobile == site / "mobile.html"
     assert desktop.exists() and mobile.exists()
     assert (site / ".nojekyll").exists()
+    for relative_path in ASSET_HASHES:
+        assert (site / "assets" / relative_path).is_file()
     assert "No edite" in (site / "README.md").read_text(encoding="utf-8")
 
 

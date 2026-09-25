@@ -1,0 +1,3 @@
+src/argentina_retail_sales/assets/*.js -text
+site/assets/*.js -text
+*.ttf binary
