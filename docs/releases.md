@@ -3,13 +3,12 @@
 El historial Git conserva codigo, PBIP textual, SQL y datos agregados versionables. Los
 binarios locales se publican como activos de GitHub Release, no como blobs del repositorio.
 
-## Proxima version `v1.1.0`
+## Version `v1.1.0`
 
-Esta rama prepara la version `1.1.0` del paquete Python. El tag y la GitHub Release
-`v1.1.0` se crean despues del merge y de completar el checklist; este documento no implica
-que ya esten publicados. Hasta entonces, la ruta de
+Esta version mejora la presentacion publica, la metadata social y la clasificacion de
+archivos generados, sin cambiar el snapshot analitico publicado. La ruta de
 [ultima release](https://github.com/alexanderhuth98/argentina-retail-sales/releases/latest)
-resuelve a `v1.0.0`.
+permite descargar sus activos una vez publicado el tag.
 
 - `powerbi/ArgentinaRetail.pbix`
 - `outputs/release-v1.1.0/SHA256SUMS.txt`
