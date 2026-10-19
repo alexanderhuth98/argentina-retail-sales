@@ -177,6 +177,42 @@ def test_rendered_variants_include_metadata_and_safe_content(dashboard_marts: Pa
     assert first_month["real_sales_yoy_pct"] is None
 
 
+@pytest.mark.parametrize("mobile", [False, True])
+def test_rendered_variants_publish_social_metadata_and_primary_canonical(
+    dashboard_marts: Path, mobile: bool
+) -> None:
+    html = render_dashboard(build_dashboard_payload(dashboard_marts), mobile=mobile)
+    primary_url = "https://alexanderhuth98.github.io/argentina-retail-sales/"
+    image_url = "https://alexanderhuth98.github.io/assets/projects/retail-analysis.png"
+    title = "Pulso del retail argentino"
+    description = (
+        "Tablero de ventas reales, pagos, categorías, canales y calidad del retail argentino."
+    )
+
+    expected_tags = (
+        f'<meta name="description" content="{description}">',
+        '<meta name="author" content="Alexander Huth">',
+        '<meta name="theme-color" content="#0b1111">',
+        f'<link rel="canonical" href="{primary_url}">',
+        '<meta property="og:type" content="website">',
+        '<meta property="og:locale" content="es_AR">',
+        f'<meta property="og:title" content="{title}">',
+        f'<meta property="og:description" content="{description}">',
+        f'<meta property="og:url" content="{primary_url}">',
+        f'<meta property="og:image" content="{image_url}">',
+        '<meta property="og:image:alt" content="Dashboard Pulso del retail argentino">',
+        '<meta name="twitter:card" content="summary_large_image">',
+        f'<meta name="twitter:title" content="{title}">',
+        f'<meta name="twitter:description" content="{description}">',
+        f'<meta name="twitter:image" content="{image_url}">',
+        '<meta name="twitter:image:alt" content="Dashboard Pulso del retail argentino">',
+    )
+    for tag in expected_tags:
+        assert tag in html
+    assert html.count('rel="canonical"') == 1
+    assert 'rel="canonical" href="mobile.html"' not in html
+
+
 def test_dashboard_identity_and_recoverable_zoom_contract(dashboard_marts: Path) -> None:
     html = render_dashboard(build_dashboard_payload(dashboard_marts))
 
@@ -227,7 +263,9 @@ def test_export_writes_both_pages_and_pages_support_files(
     assert desktop.exists() and mobile.exists()
     assert (site / ".nojekyll").exists()
     for relative_path in ASSET_HASHES:
-        assert (site / "assets" / relative_path).is_file()
+        asset = site / "assets" / relative_path
+        assert asset.is_file()
+        assert hashlib.sha256(asset.read_bytes()).hexdigest() == ASSET_HASHES[relative_path]
     assert "No edite" in (site / "README.md").read_text(encoding="utf-8")
 
 

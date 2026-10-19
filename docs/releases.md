@@ -3,14 +3,29 @@
 El historial Git conserva codigo, PBIP textual, SQL y datos agregados versionables. Los
 binarios locales se publican como activos de GitHub Release, no como blobs del repositorio.
 
-## Activos de la version `v1.0.0`
+## Proxima version `v1.1.0`
+
+Esta rama prepara la version `1.1.0` del paquete Python. El tag y la GitHub Release
+`v1.1.0` se crean despues del merge y de completar el checklist; este documento no implica
+que ya esten publicados. Hasta entonces, la ruta de
+[ultima release](https://github.com/alexanderhuth98/argentina-retail-sales/releases/latest)
+resuelve a `v1.0.0`.
 
 - `powerbi/ArgentinaRetail.pbix`
-- `outputs/release-v1.0.0/SHA256SUMS.txt`
+- `outputs/release-v1.1.0/SHA256SUMS.txt`
 
 `ArgentinaRetail.pbix` se genera localmente con Power BI Desktop despues de desplegar y
 cargar SQL Server. El archivo queda ignorado por `.gitignore`; el Release conserva el
 binario y su hash para descarga publica.
+
+El `SCHEMA_VERSION = 1.0.0` de `config.py` identifica el contrato de los datos y no la
+version del paquete ni del release.
+
+## Release anterior `v1.0.0`
+
+La release inmutable publicada anteriormente se conserva en
+[`v1.0.0`](https://github.com/alexanderhuth98/argentina-retail-sales/releases/tag/v1.0.0).
+Sus binarios y hashes corresponden a ese tag, no al codigo actual de esta rama.
 
 ## Checklist previo
 

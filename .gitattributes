@@ -1,3 +1,4 @@
-src/argentina_retail_sales/assets/*.js -text
-site/assets/*.js -text
-*.ttf binary
+site/*.html linguist-generated=true
+src/argentina_retail_sales/assets/*.js -text linguist-vendored=true
+site/assets/*.js -text linguist-vendored=true
+*.ttf binary linguist-vendored=true

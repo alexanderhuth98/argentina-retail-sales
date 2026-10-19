@@ -10,7 +10,20 @@ explica cambios en pagos, categorias y canales desde 2017 con Python, SQL Server
 El dashboard HTML estatico se publica con GitHub Pages y funciona sin SQL Server en la
 navegacion. El PBIX complementario se mantiene como activo de GitHub Release.
 
-[Abrir dashboard HTML](https://alexanderhuth98.github.io/argentina-retail-sales/)
+[Dashboard](https://alexanderhuth98.github.io/argentina-retail-sales/) |
+[Release / PBIX](https://github.com/alexanderhuth98/argentina-retail-sales/releases/latest) |
+[Caso de estudio / validacion](reports/case_study_es.md) |
+[Portfolio](https://alexanderhuth98.github.io/#proyectos)
+
+## Caso en 30 segundos
+
+- **Problema:** el crecimiento nominal puede ocultar una caida real, y supermercados y
+  autoservicios mayoristas representan universos de encuesta distintos.
+- **Hallazgo verificado:** en mayo de 2026, supermercados crecio `+25,9%` nominal
+  interanual, pero cayo `-0,7%` real interanual.
+- **Decision:** no sumar supermercados y mayoristas; tratar los faltantes como no
+  observados, nunca como cero.
+- **Limitacion:** 2026 es parcial; el detalle de canal mayorista llega hasta agosto de 2022.
 
 ![Dashboard HTML de Pulso del retail argentino](docs/images/dashboard_overview.png)
 

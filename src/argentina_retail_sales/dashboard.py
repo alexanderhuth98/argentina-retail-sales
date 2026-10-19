@@ -51,6 +51,14 @@ REQUIRED_COLUMNS = {
 }
 
 ASSET_SOURCE_DIR = Path(__file__).with_name("assets")
+DASHBOARD_URL = "https://alexanderhuth98.github.io/argentina-retail-sales/"
+DASHBOARD_IMAGE_URL = "https://alexanderhuth98.github.io/assets/projects/retail-analysis.png"
+DASHBOARD_TITLE = "Pulso del retail argentino"
+DASHBOARD_DESCRIPTION = (
+    "Tablero de ventas reales, pagos, categorías, canales y calidad del retail argentino."
+)
+DASHBOARD_AUTHOR = "Alexander Huth"
+DASHBOARD_THEME_COLOR = "#0b1111"
 ASSET_HASHES = {
     "plotly-basic-2.35.2.min.js": "138c2e81014b979dc00867a93da55b7605a17495ee78dd7afb433b7f021dfcfa",
     "plotly-locale-es-2.35.2.js": "1a20051d1983e522718de67dc977fe095727b6ff89bbe4a3c8c6251df841e981",
@@ -324,8 +332,23 @@ def render_dashboard(payload: dict[str, Any], *, mobile: bool = False) -> str:
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Tablero de ventas reales, pagos, categorías, canales y calidad del retail argentino.">
-  <title>Pulso del retail argentino · {variant.capitalize()}</title>
+  <meta name="description" content="{DASHBOARD_DESCRIPTION}">
+  <meta name="author" content="{DASHBOARD_AUTHOR}">
+  <meta name="theme-color" content="{DASHBOARD_THEME_COLOR}">
+  <link rel="canonical" href="{DASHBOARD_URL}">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="es_AR">
+  <meta property="og:title" content="{DASHBOARD_TITLE}">
+  <meta property="og:description" content="{DASHBOARD_DESCRIPTION}">
+  <meta property="og:url" content="{DASHBOARD_URL}">
+  <meta property="og:image" content="{DASHBOARD_IMAGE_URL}">
+  <meta property="og:image:alt" content="Dashboard Pulso del retail argentino">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="{DASHBOARD_TITLE}">
+  <meta name="twitter:description" content="{DASHBOARD_DESCRIPTION}">
+  <meta name="twitter:image" content="{DASHBOARD_IMAGE_URL}">
+  <meta name="twitter:image:alt" content="Dashboard Pulso del retail argentino">
+  <title>{DASHBOARD_TITLE} · {variant.capitalize()}</title>
   <style>{CSS}</style>
   <script src="assets/plotly-basic-2.35.2.min.js" defer></script>
   <script src="assets/plotly-locale-es-2.35.2.js" defer></script>
