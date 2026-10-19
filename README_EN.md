@@ -4,6 +4,26 @@ Reproducible analytics case on monthly supermarket and wholesale self-service sa
 Argentina. It separates nominal growth from real performance and tracks payment, category
 and channel mix from 2017 using Python, SQL Server and a versionable Power BI PBIP project.
 
+The static HTML dashboard is published with GitHub Pages and works without SQL Server in
+the browser. The complementary PBIX is distributed as a GitHub Release asset.
+
+[Dashboard](https://alexanderhuth98.github.io/argentina-retail-sales/) |
+[Release / PBIX](https://github.com/alexanderhuth98/argentina-retail-sales/releases/latest) |
+[Case study / validation](reports/case_study_en.md) |
+[Portfolio](https://alexanderhuth98.github.io/#proyectos)
+
+## Case in 30 seconds
+
+- **Problem:** nominal growth can hide a real contraction, and supermarkets and wholesale
+  self-service stores represent different survey populations.
+- **Verified finding:** in May 2026, supermarket sales grew `+25.9%` nominally year over
+  year but fell `-0.7%` in real year-over-year terms.
+- **Decision:** never add supermarkets and wholesale into one total; treat missing values
+  as unobserved, never as zero.
+- **Limitation:** 2026 is partial; wholesale channel detail runs only through August 2022.
+
+![Argentina retail pulse HTML dashboard](docs/images/dashboard_overview.png)
+
 ## Verified latest results
 
 **Latest observed month: May 2026; 2026 is partial.**

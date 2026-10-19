@@ -10,6 +10,7 @@
 | [Diccionario](data_dictionary.md) | Contratos de los cinco CSV. |
 | [SQL highlights](sql_highlights.md) | Consultas T-SQL representativas. |
 | [Operaciones](operations.md) | Ejecucion, validacion y recuperacion. |
+| [Releases](releases.md) | Historial, proxima version, PBIX y hashes. |
 | [Acceso a datos](data_access.md) | URLs, procedencia y cobertura. |
 | [SQL Server runbook](../sql/README.md) | Despliegue y carga atomica. |
 | [Power BI guide](../powerbi/README.md) | Modelo, paginas, conexion y validator. |
