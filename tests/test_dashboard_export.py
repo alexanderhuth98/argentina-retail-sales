@@ -156,7 +156,7 @@ def test_rendered_variants_include_metadata_and_safe_content(dashboard_marts: Pa
     for html in (desktop, mobile):
         assert '<html lang="es-AR"' in html
         assert 'name="viewport"' in html
-        assert '<link rel="icon" href="/favicon.ico" sizes="any">' in html
+        assert '<link rel="icon" href="https://alexanderhuth98.github.io/favicon.ico"' in html
         assert '<meta name="referrer" content="strict-origin-when-cross-origin">' in html
         assert 'data-goatcounter="https://alexanderhuth98.goatcounter.com/count"' in html
         assert 'src="assets/plotly-basic-2.35.2.min.js"' in html
