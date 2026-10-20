@@ -11,10 +11,32 @@ htmlcov/
 dist/
 build/
 
+# Secrets and local configuration
+.env
+.env.*
+!.env.example
+.envrc
+.secrets/
+secrets/
+credentials*.json
+service-account*.json
+*.pem
+*.key
+*.p12
+*.pfx
+
 # Source snapshots and temporary files
 /data/
 *.part
 *.tmp
+*.parquet
+*.feather
+*.arrow
+*.sqlite
+*.sqlite3
+*.db
+*.xlsx
+*.xls
 
 # Generated local deliverables; publish these as GitHub Release assets
 /outputs/*

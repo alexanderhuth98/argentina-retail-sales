@@ -156,6 +156,9 @@ def test_rendered_variants_include_metadata_and_safe_content(dashboard_marts: Pa
     for html in (desktop, mobile):
         assert '<html lang="es-AR"' in html
         assert 'name="viewport"' in html
+        assert '<link rel="icon" href="/favicon.ico" sizes="any">' in html
+        assert '<meta name="referrer" content="strict-origin-when-cross-origin">' in html
+        assert 'data-goatcounter="https://alexanderhuth98.goatcounter.com/count"' in html
         assert 'src="assets/plotly-basic-2.35.2.min.js"' in html
         assert "cdn.plot.ly" not in html
         assert "https://cdn" not in html
@@ -262,6 +265,7 @@ def test_export_writes_both_pages_and_pages_support_files(
     assert mobile == site / "mobile.html"
     assert desktop.exists() and mobile.exists()
     assert (site / ".nojekyll").exists()
+    assert (site / "404.html").exists()
     for relative_path in ASSET_HASHES:
         asset = site / "assets" / relative_path
         assert asset.is_file()

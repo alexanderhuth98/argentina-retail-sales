@@ -29,6 +29,36 @@ jobs:
         run: ruff format --check .
       - name: Tests with coverage
         run: pytest --cov=argentina_retail_sales --cov-report=term-missing --cov-report=xml
+      - name: Set up Node.js
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: "24"
+      - name: Validate published HTML
+        run: npx --yes html-validate@11.16.4 "site/*.html"
+      - name: Validate local links
+        uses: lycheeverse/lychee-action@e7477775783ea5526144ba13e8db5eec57747ce8 # v2.9.0
+        with:
+          args: --offline --no-progress "./**/*.md" "./site/*.html"
+          fail: true
+      - name: Audit dependencies
+        run: python -m pip_audit --strict .
       - name: Validate Power BI PBIP
         shell: pwsh
         run: ./powerbi/validate_pbip.ps1 -SkipTom
+
+  secrets:
+    name: Secret scan
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Check out full history
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+
+      - name: Scan with Gitleaks
+        uses: gitleaks/gitleaks-action@e0c47f4f8be36e29cdc102c57e68cb5cbf0e8d1e # v3.0.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITLEAKS_ENABLE_COMMENTS: "false"
