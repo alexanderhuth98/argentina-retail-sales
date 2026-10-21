@@ -11,7 +11,7 @@ license = {file = "LICENSE"}
 authors = [{name = "Alexander Huth"}]
 requires-python = ">=3.11,<3.13"
 dependencies = [
-    "pandas==2.3.3",
+    "pandas==3.0.6",
     "requests==2.34.2",
 ]
 
@@ -29,8 +29,8 @@ argentina-retail-sales = "argentina_retail_sales.pipeline:main"
 dev = [
     "pip-audit==2.10.1",
     "pytest==9.1.1",
-    "pytest-cov==7.0.0",
-    "ruff==0.12.12",
+    "pytest-cov==7.1.0",
+    "ruff==0.17.1",
 ]
 
 [tool.setuptools.packages.find]
