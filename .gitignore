@@ -11,6 +11,12 @@ htmlcov/
 dist/
 build/
 
+# Node and Playwright test artifacts
+node_modules/
+playwright-report/
+test-results/
+blob-report/
+
 # Secrets and local configuration
 .env
 .env.*

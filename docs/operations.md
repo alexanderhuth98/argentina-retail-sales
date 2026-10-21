@@ -3,6 +3,7 @@
 ## Requisitos
 
 - Python `>=3.11,<3.13`.
+- Node.js `24` para los contratos de navegador.
 - SQL Server 2017+ y `sqlcmd` para la capa de servicio.
 - Power BI Desktop para refresco, render y layout movil; no para el pipeline Python.
 
@@ -69,11 +70,27 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\powerbi\validate_pbip.
 La ultima orden requiere Power BI Desktop y deserializa `model.bim` con TOM. Ninguna
 variante ejecuta Power Query, DAX o render interactivo.
 
+### Contratos de navegador
+
+```powershell
+npm ci
+npx playwright install chromium
+npm test
+```
+
+Playwright inicia `python -m http.server` sobre `site/` y ejecuta Chromium de escritorio y
+movil. Para probar un despliegue existente, definir `E2E_BASE_URL` con la URL base; en ese
+modo no se inicia el servidor local. Los tests bloquean GoatCounter, no dependen de Google
+Fonts ni de servicios de terceros, y solo generan trazas y capturas cuando falla un caso.
+En CI hay dos reintentos, no se graba video y el reporte se guarda siete dias.
+
 ## CI
 
 GitHub Actions y GitLab CI ejecutan Ruff, format, pytest con el threshold de cobertura y
-el validador PBIP estructural. Los tests tambien revisan SQL estatico: esquemas, claves,
-transaccion, gate, CTEs, ventanas, indices y ausencia de `SELECT *`.
+el validador PBIP estructural. GitHub ejecuta ademas el job independiente `E2E (Chromium)`;
+despues de publicar Pages corre un smoke seguro contra la URL entregada por el deployment.
+Los tests tambien revisan SQL estatico: esquemas, claves, transaccion, gate, CTEs, ventanas,
+indices y ausencia de `SELECT *`.
 
 ## Recuperacion
 
@@ -86,3 +103,5 @@ transaccion, gate, CTEs, ventanas, indices y ausencia de `SELECT *`.
 | Carga SQL falla | Rollback; queda la version anterior. | Consultar `retail_ops.load_batch`. |
 | PBIP estructural falla | CI bloquea. | Corregir modelo/referencia; reejecutar validator. |
 | Refresh/render falla | No afecta CSV/SQL. | Revisar parametros y Power BI Desktop. |
+| Contrato E2E falla | CI conserva traza y captura por siete dias. | Descargar el artefacto Playwright y abrir la traza. |
+| Smoke de Pages falla | El deploy termino pero la pagina no arranco. | Revisar la URL del environment y el artefacto del smoke. |

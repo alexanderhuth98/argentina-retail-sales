@@ -50,6 +50,14 @@ REQUIRED_COLUMNS = {
     "quality_checks": {"source", "check", "severity", "status", "detail"},
 }
 
+MART_KEYS = {
+    "monthly_summary": ["month", "retail_format"],
+    "payment_mix": ["month", "retail_format", "payment_method"],
+    "category_mix": ["month", "retail_format", "category"],
+    "channel_mix": ["month", "retail_format", "channel"],
+    "quality_checks": ["source", "check"],
+}
+
 ASSET_SOURCE_DIR = Path(__file__).with_name("assets")
 DASHBOARD_URL = "https://alexanderhuth98.github.io/argentina-retail-sales/"
 DASHBOARD_IMAGE_URL = "https://alexanderhuth98.github.io/assets/projects/retail-analysis.png"
@@ -94,31 +102,57 @@ def add_group_yoy(
     *,
     percentage: bool,
 ) -> pd.DataFrame:
-    """Add a 12-month comparison within format and business dimension."""
-    result = frame.sort_values(["retail_format", dimension_column, "month"]).copy()
+    """Add an exact-calendar prior-year comparison within each business group."""
+    result = frame.copy()
     group_columns = ["retail_format", dimension_column]
-    previous = result.groupby(group_columns, sort=False)[value_column].shift(12)
+    lookup = result.set_index([*group_columns, "month"])[value_column]
+    prior_index = pd.MultiIndex.from_arrays(
+        [
+            *(result[column] for column in group_columns),
+            result["month"] - pd.DateOffset(years=1),
+        ],
+        names=[*group_columns, "month"],
+    )
+    previous = pd.Series(lookup.reindex(prior_index).to_numpy(), index=result.index)
     if percentage:
-        result[output_column] = (result[value_column] / previous - 1) * 100
+        result[output_column] = (
+            ((result[value_column] / previous) - 1).mul(100).where(previous.ne(0))
+        )
     else:
         result[output_column] = result[value_column] - previous
-    return result.sort_index()
+    return result
 
 
 def _load_frame(data_dir: Path, name: str) -> pd.DataFrame:
     path = data_dir / f"{name}.csv"
     if not path.exists():
         raise DashboardContractError(f"Falta el mart curado: {path.name}")
-    frame = pd.read_csv(path)
+    try:
+        frame = pd.read_csv(path)
+    except (OSError, pd.errors.ParserError, pd.errors.EmptyDataError) as error:
+        raise DashboardContractError(f"No se pudo leer {path.name}: {error}") from error
     missing = REQUIRED_COLUMNS[name].difference(frame.columns)
     if missing:
         raise DashboardContractError(f"Columnas faltantes en {path.name}: {sorted(missing)}")
+    if frame.empty:
+        raise DashboardContractError(f"Mart curado vacío: {path.name}")
     if "month" in frame:
-        frame["month"] = pd.to_datetime(frame["month"], errors="raise")
+        try:
+            frame["month"] = pd.to_datetime(frame["month"], format="%Y-%m-%d", errors="raise")
+        except (TypeError, ValueError) as error:
+            raise DashboardContractError(f"Mes inválido en {path.name}: {error}") from error
     if "retail_format" in frame:
         formats = set(frame["retail_format"].dropna().unique())
         if not formats.issubset({"supermarkets", "wholesale"}):
             raise DashboardContractError(f"Formato inesperado en {path.name}: {sorted(formats)}")
+    keys = MART_KEYS[name]
+    if frame[keys].isna().any().any():
+        raise DashboardContractError(f"Claves nulas en {path.name}: {keys}")
+    if frame.duplicated(keys).any():
+        raise DashboardContractError(f"Claves duplicadas en {path.name}: {keys}")
+    numeric = frame.select_dtypes(include="number")
+    if numeric.isin([float("inf"), float("-inf")]).any().any():
+        raise DashboardContractError(f"Valores infinitos en {path.name}")
     return frame
 
 

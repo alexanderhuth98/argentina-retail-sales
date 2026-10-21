@@ -8,6 +8,7 @@ from argentina_retail_sales.dashboard import (
     ASSET_HASHES,
     ASSET_SOURCE_DIR,
     DashboardContractError,
+    add_group_yoy,
     build_dashboard_payload,
     export_dashboard,
     load_dashboard_data,
@@ -135,6 +136,80 @@ def test_dashboard_calculations_and_missing_channel_contract(dashboard_marts: Pa
     assert unavailable["share_pct"].isna().all()
 
 
+def test_group_yoy_uses_exact_calendar_month_with_shuffled_missing_rows() -> None:
+    months = list(pd.date_range("2022-01-01", "2022-12-01", freq="MS"))
+    months.remove(pd.Timestamp("2022-06-01"))
+    months.extend([pd.Timestamp("2023-01-01"), pd.Timestamp("2023-06-01")])
+    frame = pd.DataFrame(
+        {
+            "month": months,
+            "retail_format": "supermarkets",
+            "category": "grocery",
+            "value": [100 if month == pd.Timestamp("2022-01-01") else 120 for month in months],
+        }
+    ).sample(frac=1, random_state=7)
+
+    result = add_group_yoy(frame, "category", "value", "yoy", percentage=True)
+
+    january = result.loc[result["month"] == "2023-01-01", "yoy"].item()
+    missing_prior = result.loc[result["month"] == "2023-06-01", "yoy"].item()
+    assert january == pytest.approx(20)
+    assert pd.isna(missing_prior)
+    assert result.index.equals(frame.index)
+
+
+def test_group_yoy_returns_missing_when_exact_prior_value_is_zero() -> None:
+    frame = pd.DataFrame(
+        {
+            "month": pd.to_datetime(["2022-03-01", "2023-03-01"]),
+            "retail_format": ["wholesale", "wholesale"],
+            "category": ["beverages", "beverages"],
+            "value": [0, 25],
+        }
+    )
+
+    result = add_group_yoy(frame, "category", "value", "yoy", percentage=True)
+
+    assert pd.isna(result.loc[1, "yoy"])
+
+
+@pytest.mark.parametrize(
+    ("mutation", "message"),
+    [
+        ("missing_file", "Falta el mart curado"),
+        ("missing_column", "Columnas faltantes"),
+        ("bad_month", "Mes inválido"),
+        ("bad_format", "Formato inesperado"),
+        ("duplicate_key", "Claves duplicadas"),
+        ("infinite_value", "Valores infinitos"),
+    ],
+)
+def test_dashboard_mart_failures_are_explicit(
+    dashboard_marts: Path, mutation: str, message: str
+) -> None:
+    path = dashboard_marts / "monthly_summary.csv"
+    frame = pd.read_csv(path)
+    if mutation == "missing_file":
+        path.unlink()
+    elif mutation == "missing_column":
+        frame.drop(columns="real_sales_index_sa").to_csv(path, index=False)
+    elif mutation == "bad_month":
+        frame.loc[0, "month"] = "not-a-month"
+        frame.to_csv(path, index=False)
+    elif mutation == "bad_format":
+        frame.loc[0, "retail_format"] = "unknown"
+        frame.to_csv(path, index=False)
+    elif mutation == "duplicate_key":
+        pd.concat([frame, frame.iloc[[0]]], ignore_index=True).to_csv(path, index=False)
+    else:
+        frame["real_sales_index_sa"] = frame["real_sales_index_sa"].astype(float)
+        frame.loc[0, "real_sales_index_sa"] = float("inf")
+        frame.to_csv(path, index=False)
+
+    with pytest.raises(DashboardContractError, match=message):
+        load_dashboard_data(dashboard_marts)
+
+
 def test_quality_gate_requires_high_checks_and_blocks_failures() -> None:
     assert quality_gate([]) == "BLOCKED"
     assert quality_gate([{"severity": "LOW", "status": "PASS"}]) == "BLOCKED"
@@ -254,6 +329,28 @@ def test_pinned_dashboard_assets_exist_and_match_hashes() -> None:
         asset = ASSET_SOURCE_DIR / relative_path
         assert asset.is_file(), relative_path
         assert hashlib.sha256(asset.read_bytes()).hexdigest() == expected_hash
+
+
+@pytest.mark.parametrize("failure", ["missing", "tampered"])
+def test_export_rejects_missing_or_tampered_assets(
+    dashboard_marts: Path,
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    failure: str,
+) -> None:
+    from argentina_retail_sales import dashboard
+
+    assets = tmp_path / "source-assets"
+    assets.mkdir()
+    asset = assets / "plotly.js"
+    if failure == "tampered":
+        asset.write_bytes(b"tampered")
+    monkeypatch.setattr(dashboard, "ASSET_SOURCE_DIR", assets)
+    monkeypatch.setattr(dashboard, "ASSET_HASHES", {"plotly.js": "0" * 64})
+
+    message = "Falta el asset local" if failure == "missing" else "Integridad inválida"
+    with pytest.raises(DashboardContractError, match=message):
+        export_dashboard(dashboard_marts, tmp_path / "site")
 
 
 def test_export_writes_both_pages_and_pages_support_files(

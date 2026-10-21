@@ -1,0 +1,14 @@
+{
+  "name": "argentina-retail-sales-e2e",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Browser contracts for the static Argentina retail sales dashboard",
+  "scripts": {
+    "test": "playwright test",
+    "test:e2e": "playwright test"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "4.14.0",
+    "@playwright/test": "1.64.1"
+  }
+}

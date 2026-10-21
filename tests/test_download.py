@@ -21,6 +21,12 @@ class FakeResponse:
         yield b"official,data\n"
 
 
+class BrokenResponse(FakeResponse):
+    def iter_content(self, chunk_size: int):
+        yield b"partial"
+        raise RuntimeError("connection lost")
+
+
 def test_download_writes_sources_and_manifest(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:
@@ -51,3 +57,29 @@ def test_download_writes_sources_and_manifest(
         for line in (manifests / "raw_sources.jsonl").read_text(encoding="utf-8").splitlines()
     ]
     assert {row["source"] for row in manifest_rows} == set(config.SOURCES)
+
+
+def test_failed_forced_download_preserves_previous_file_and_manifest(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    raw = tmp_path / "raw"
+    manifests = tmp_path / "manifests"
+    raw.mkdir()
+    manifests.mkdir()
+    monkeypatch.setattr(config, "RAW_DIR", raw)
+    monkeypatch.setattr(config, "PORTFOLIO_DATA_DIR", tmp_path / "portfolio_data")
+    monkeypatch.setattr(config, "OUTPUT_DIR", tmp_path / "outputs")
+    monkeypatch.setattr(config, "MANIFEST_DIR", manifests)
+    first_source = next(iter(config.SOURCES.values()))
+    destination = raw / first_source["filename"]
+    destination.write_bytes(b"known-good")
+    manifest_path = manifests / "raw_sources.jsonl"
+    manifest_path.write_text("existing manifest\n", encoding="utf-8")
+    monkeypatch.setattr(download.requests, "get", lambda *args, **kwargs: BrokenResponse())
+
+    with pytest.raises(RuntimeError, match="connection lost"):
+        download.download_all(force=True)
+
+    assert destination.read_bytes() == b"known-good"
+    assert not destination.with_suffix(destination.suffix + ".part").exists()
+    assert manifest_path.read_text(encoding="utf-8") == "existing manifest\n"
